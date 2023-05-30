@@ -19,7 +19,9 @@ import ru.adel.SocialMediaApp.util.exception.UnauthorizedException;
 import ru.adel.SocialMediaApp.util.exception.UserNotFoundException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,25 +47,56 @@ public class PostServiceImpl implements PostService {
         Post post = modelMapper.map(postDTO, Post.class);
         post.setUser(user);
 
+        Set<PostImage> postImages = new HashSet<>();
+        if (postDTO.getImages() != null) {
+            for (String imageUrl : postDTO.getImages()) {
+                PostImage postImage = new PostImage();
+                postImage.setImageUrl(imageUrl);
+                postImage.setPost(post);
+                postImages.add(postImage);
+            }
+        }
+        post.setImages(postImages);
+
         Post savedPost = postRepository.save(post);
         return modelMapper.map(savedPost, PostDTO.class);
     }
 
-    @Override
+
     public PostDTO updatePost(Long postId, PostDTO postDTO, Long userId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found with ID: " + postId));
+        // Проверка авторизации пользователя
+        if (!post.getUser().getId().equals(userId)) {
+            throw new UnauthorizedException("Unauthorized to update this post");
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+        post.getImages().clear();
+        Post updatedPost = modelMapper.map(postDTO,Post.class);
+        updatedPost.setUser(user);
+
+        Set<PostImage> postImages = new HashSet<>();
+        if (postDTO.getImages() != null) {
+            for (String imageUrl : postDTO.getImages()) {
+                PostImage postImage = new PostImage();
+                postImage.setImageUrl(imageUrl);
+                postImage.setPost(updatedPost);
+                postImages.add(postImage);
+            }
+        }
+        updatedPost.setImages(postImages);
+        updatedPost.setId(postId);
 
         // Проверка авторизации пользователя
         if (!post.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("Unauthorized to update this post");
         }
 
-        modelMapper.map(postDTO, post);
-
-        Post updatedPost = postRepository.save(post);
-        return modelMapper.map(updatedPost, PostDTO.class);
+        Post post1 = postRepository.save(updatedPost);
+        return modelMapper.map(post1, PostDTO.class);
     }
+
 
     @Override
     public void deletePost(Long postId, Long userId) {

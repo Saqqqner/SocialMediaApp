@@ -3,6 +3,8 @@ package ru.adel.SocialMediaApp.models;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Size;
+
 import lombok.*;
 
 import java.util.Objects;
@@ -20,13 +22,14 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    @Size(min = 3, message = "Имя пользователя должно содержать не менее 3 символов")
     private String username;
 
     @Column(nullable = false)
     private String password;
 
     @Column(nullable = false, unique = true)
-    @Email(message = "Вы должны указать правильное значение почты'examle@mail.ru'")
+    @Email(message = "Некорректный адрес электронной почты  ")
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -46,8 +49,8 @@ public class User {
 
     @ManyToMany
     @JoinTable(name = "user_followers",
-            joinColumns = @JoinColumn(name = "follower_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "follower_id"))
     private Set<User> followers;
 
     @ManyToMany

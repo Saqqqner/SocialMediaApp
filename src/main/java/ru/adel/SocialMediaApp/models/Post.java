@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -41,7 +42,7 @@ public class Post {
     private User user;
 
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @JoinTable()
     private Set<PostImage> images;
 
 

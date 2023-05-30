@@ -1,6 +1,7 @@
 package ru.adel.SocialMediaApp.services.impl;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import ru.adel.SocialMediaApp.dto.UserDTO;
 import ru.adel.SocialMediaApp.models.User;
@@ -8,6 +9,9 @@ import ru.adel.SocialMediaApp.repositories.UserRepository;
 import ru.adel.SocialMediaApp.services.UserService;
 import ru.adel.SocialMediaApp.util.exception.DuplicateUserException;
 import ru.adel.SocialMediaApp.util.exception.UserNotFoundException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,6 +31,18 @@ public class UserServiceImpl implements UserService {
 
         return modelMapper.map(user, UserDTO.class);
     }
+    @Override
+    public List<UserDTO> getAllUsersExceptCurrentUser(Long currentUserId) {
+        List<User> allUsers = userRepository.findAll();
+        User currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + currentUserId));
+
+        return allUsers.stream()
+                .filter(user -> !user.equals(currentUser))
+                .map(user -> modelMapper.map(user, UserDTO.class))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public UserDTO updateUser(Long userId, UserDTO userDTO) {
         // Проверка существования пользователя
@@ -71,17 +87,60 @@ public class UserServiceImpl implements UserService {
             userRepository.deleteById(userId);
         }
     @Override
+    public List<UserDTO> getFollowingUsers(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+
+        return user.getFollowing().stream()
+                .map(u -> modelMapper.map(u, UserDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDTO> getFollowers(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+
+        return user.getFollowers().stream()
+                .map(u -> modelMapper.map(u, UserDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public UserDTO sendFriendRequest(Long userId, Long friendId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
         User friend = userRepository.findById(friendId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + friendId));
 
+        if (user.getFollowers().contains(friend)) {
+            // Если пользователь уже является подписчиком, вызываем метод acceptFriendRequest
+            return acceptFriendRequest(userId, friendId);
+        }
+
         user.getFollowing().add(friend);//Добавляем друга в список пользователей на которых подписан данный пользователь
         friend.getFollowers().add(user); // Добавляем пользователя в список подписчиков друга
 
         userRepository.save(user);
         userRepository.save(friend);
+
+        return modelMapper.map(user, UserDTO.class);
+    }
+    @Override
+    public UserDTO cancelFriendRequest(Long userId, Long friendId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+        User friend = userRepository.findById(friendId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + friendId));
+
+        if (user.getFollowing().contains(friend)) {
+            user.getFollowing().remove(friend); // Удаляем пользователя из списка подписчиков друга
+            friend.getFollowers().remove(user); // Удаляем друга из списка пользователей, на которых подписан текущий пользователь
+
+
+            userRepository.save(user);
+            userRepository.save(friend);
+        }
 
         return modelMapper.map(user, UserDTO.class);
     }

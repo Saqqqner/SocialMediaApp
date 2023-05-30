@@ -6,8 +6,11 @@ import ru.adel.SocialMediaApp.models.Post;
 import ru.adel.SocialMediaApp.models.PostImage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostImageRepository extends JpaRepository<PostImage, Long> {
     List<PostImage> findByPost(Post post);
+    Optional<PostImage> findByImageUrl(String imageUrl);
+    void deleteByPost(Post post);
 }

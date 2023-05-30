@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Size;
+
 @AllArgsConstructor
 @Getter
 @Setter
@@ -13,7 +15,5 @@ public class RegistrationRequest {
     private String username;
     private String email;
     private String password;
-    // Дополнительные поля, если необходимо
 
-    // Геттеры и сеттеры
 }
