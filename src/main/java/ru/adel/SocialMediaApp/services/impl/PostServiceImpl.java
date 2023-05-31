@@ -66,36 +66,45 @@ public class PostServiceImpl implements PostService {
     public PostDTO updatePost(Long postId, PostDTO postDTO, Long userId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found with ID: " + postId));
+
         // Проверка авторизации пользователя
         if (!post.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("Unauthorized to update this post");
         }
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
-        post.getImages().clear();
-        Post updatedPost = modelMapper.map(postDTO,Post.class);
-        updatedPost.setUser(user);
 
-        Set<PostImage> postImages = new HashSet<>();
+        // Получение старых изображений
+        Set<PostImage> oldImages = post.getImages();
+
+        // Создание нового набора изображений
+        Set<PostImage> newImages = new HashSet<>();
+
+        // Проверка наличия новых изображений
         if (postDTO.getImages() != null) {
             for (String imageUrl : postDTO.getImages()) {
                 PostImage postImage = new PostImage();
                 postImage.setImageUrl(imageUrl);
-                postImage.setPost(updatedPost);
-                postImages.add(postImage);
+                postImage.setPost(post);
+                newImages.add(postImage);
             }
         }
-        updatedPost.setImages(postImages);
-        updatedPost.setId(postId);
 
-        // Проверка авторизации пользователя
-        if (!post.getUser().getId().equals(userId)) {
-            throw new UnauthorizedException("Unauthorized to update this post");
+        // Удаление старых изображений, если есть новые
+        if (!newImages.isEmpty()) {
+            oldImages.retainAll(newImages); // Удаление старых изображений, оставляя только те, которые есть в новом наборе
+            post.getImages().addAll(newImages); // Добавление новых изображений
         }
 
-        Post post1 = postRepository.save(updatedPost);
-        return modelMapper.map(post1, PostDTO.class);
+
+        post.setTitle(postDTO.getTitle());
+        post.setText(postDTO.getText());
+
+        Post updatedPost = postRepository.save(post);
+        return modelMapper.map(updatedPost, PostDTO.class);
     }
+
+
+
+
 
 
     @Override
@@ -158,7 +167,7 @@ public class PostServiceImpl implements PostService {
         return new PageImpl<>(postDTOs, pageRequest, postPage.getTotalElements());
     }
     @Override
-    public List<PostImageDTO> getPostImagesByPost(Long postId) {
+    public List<String> getPostImagesByPost(Long postId) {
         // Получаем пост по его идентификатору из postDTO
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found"));
@@ -166,11 +175,12 @@ public class PostServiceImpl implements PostService {
         // Получаем все изображения, связанные с данным постом
         List<PostImage> postImages = postImageRepository.findByPost(post);
 
-        // Преобразуем список PostImage в список PostImageDTO
-        List<PostImageDTO> postImageDTOs = postImages.stream()
-                .map(postImage -> modelMapper.map(postImage, PostImageDTO.class))
+        // Преобразуем список PostImage в список URL-адресов
+        List<String> imageUrls = postImages.stream()
+                .map(PostImage::getImageUrl)
                 .collect(Collectors.toList());
 
-        return postImageDTOs;
+        return imageUrls;
     }
+
 }

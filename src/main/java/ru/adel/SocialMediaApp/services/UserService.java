@@ -8,7 +8,7 @@ public interface UserService {
     UserDTO getUserById(Long userId);
     UserDTO updateUser(Long userId, UserDTO userDTO);
     void deleteUser(Long userId);
-
+    UserDTO changePassword(Long userId,String newPassword);
     List<UserDTO> getAllUsersExceptCurrentUser(Long currentUserId);
     List<UserDTO> getFollowingUsers(Long userId);
 

@@ -13,7 +13,7 @@ public interface PostService {
     Page<PostDTO> getPostsByUser(Long userId, int page, int size);
     Page<PostDTO> getPostsBySubscribedUsers(Long userId, int page, int size);
 
-    List<PostImageDTO> getPostImagesByPost(Long postId);
+    List<String> getPostImagesByPost(Long postId);
 
 
 }

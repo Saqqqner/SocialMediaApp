@@ -31,6 +31,12 @@ public class RestExceptionHandler {
         // Возвращаем ошибку с соответствующим HTTP-статусом
         return  ResponseEntity.status( HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
+    @ExceptionHandler(IncorrectPasswordException.class)
+    public ResponseEntity<ErrorResponse> handleIncorrectPasswordException(IncorrectPasswordException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
     @ExceptionHandler(DuplicateUserException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateUserException(DuplicateUserException ex){
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());

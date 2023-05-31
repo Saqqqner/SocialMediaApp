@@ -67,8 +67,14 @@ public class MessageServiceImpl implements MessageService {
 
         List<Message> messages = messageRepository.findBySenderAndRecipientOrderByCreatedAtDesc(sender, recipient);
         return messages.stream()
-                .map(message -> modelMapper.map(message, MessageDTO.class))
+                .map(message -> {
+                    MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
+                    messageDTO.setSenderId(message.getSender().getId());
+                    messageDTO.setRecipientId(message.getRecipient().getId());
+                    return messageDTO;
+                })
                 .collect(Collectors.toList());
+
     }
 
 

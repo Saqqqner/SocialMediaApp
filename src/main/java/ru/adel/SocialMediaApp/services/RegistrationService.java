@@ -5,5 +5,5 @@ import ru.adel.SocialMediaApp.dto.UserDTO;
 
 public interface RegistrationService {
     UserDTO registerUser(RegistrationRequest registrationRequest);
-    UserDTO changePassword(Long userId, String newPassword);
+
 }

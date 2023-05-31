@@ -1,9 +1,6 @@
 package ru.adel.SocialMediaApp.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.Size;
 
@@ -11,6 +8,7 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @NoArgsConstructor
+
 public class RegistrationRequest {
     private String username;
     private String email;

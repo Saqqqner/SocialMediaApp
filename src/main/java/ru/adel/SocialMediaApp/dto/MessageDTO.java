@@ -1,9 +1,6 @@
 package ru.adel.SocialMediaApp.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -11,10 +8,11 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+
 public class MessageDTO {
     private Long id;
     private String content;
-    private UserDTO sender;
-    private UserDTO recipient;
+    private Long recipientId;
+    private Long senderId;
 
 }

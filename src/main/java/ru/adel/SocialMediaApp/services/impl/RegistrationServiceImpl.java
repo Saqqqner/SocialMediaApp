@@ -48,15 +48,5 @@ public class RegistrationServiceImpl implements RegistrationService {
         return modelMapper.map(savedUser, UserDTO.class);
     }
 
-    @Override
-    public UserDTO changePassword(Long userId, String newPassword) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
-        // Обновление пароля
-        String encodedPassword = passwordEncoder.encode(newPassword);
-        user.setPassword(encodedPassword);
-        // Сохранение пользователя с обновленным паролем в базе данных
-        User updatedUser = userRepository.save(user);
-        return modelMapper.map(updatedUser, UserDTO.class);
-    }
+
 }

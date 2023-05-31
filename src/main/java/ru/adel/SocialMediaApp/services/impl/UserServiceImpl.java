@@ -1,13 +1,14 @@
 package ru.adel.SocialMediaApp.services.impl;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.adel.SocialMediaApp.dto.UserDTO;
 import ru.adel.SocialMediaApp.models.User;
 import ru.adel.SocialMediaApp.repositories.UserRepository;
 import ru.adel.SocialMediaApp.services.UserService;
 import ru.adel.SocialMediaApp.util.exception.DuplicateUserException;
+import ru.adel.SocialMediaApp.util.exception.IncorrectPasswordException;
 import ru.adel.SocialMediaApp.util.exception.UserNotFoundException;
 
 import java.util.List;
@@ -17,10 +18,13 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper ;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
+
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -186,5 +190,19 @@ public class UserServiceImpl implements UserService {
 
         return modelMapper.map(user, UserDTO.class);
     }
+    @Override
+    public UserDTO changePassword(Long userId, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
+
+
+        // Обновление пароля
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encodedPassword);
+
+        // Сохранение пользователя с обновленным паролем в базе данных
+        User updatedUser = userRepository.save(user);
+        return modelMapper.map(updatedUser, UserDTO.class);
+    }
 }

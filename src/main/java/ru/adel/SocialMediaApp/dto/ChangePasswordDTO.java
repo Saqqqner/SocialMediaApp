@@ -11,5 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ChangePasswordDTO {
     private Long userId;
+    private String currentPassword;
     private String newPassword;
 }
