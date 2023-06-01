@@ -1,27 +1,31 @@
 package ru.adel.SocialMediaApp.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.adel.SocialMediaApp.dto.AuthenticationRequest;
 import ru.adel.SocialMediaApp.dto.RegistrationRequest;
 import ru.adel.SocialMediaApp.dto.UserDTO;
 import ru.adel.SocialMediaApp.security.jwt.JWTUtil;
 import ru.adel.SocialMediaApp.services.impl.RegistrationServiceImpl;
-import ru.adel.SocialMediaApp.util.exception.BadRequestException;
 import ru.adel.SocialMediaApp.util.exception.UnauthorizedException;
 import ru.adel.SocialMediaApp.util.response.JWTResponse;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Аутентификация и авторизация")
 public class AuthController {
     private final RegistrationServiceImpl registrationService;
     private final JWTUtil jwtUtil;
@@ -36,6 +40,8 @@ public class AuthController {
         this.modelMapper = modelMapper;
     }
     @PostMapping("/registration")
+    @Operation(summary = "Регистрация пользователя")
+    @ApiResponse(responseCode = "201", description = "Пользователь успешно зарегистрирован")
     public ResponseEntity<?> performRegistration(  @RequestBody RegistrationRequest registrationRequest ) {
             UserDTO registeredUser = registrationService.registerUser(registrationRequest);
             String token = jwtUtil.generateToken(registeredUser.getUsername());
@@ -47,6 +53,8 @@ public class AuthController {
 
 
     @PostMapping("/login")
+    @Operation(summary = "Аутентификация пользователя")
+    @ApiResponse(responseCode = "200", description = "Успешная аутентификация")
     public ResponseEntity<JWTResponse> performLogin(  @RequestBody AuthenticationRequest authenticationRequest){
         try {
             authenticationManager.authenticate(

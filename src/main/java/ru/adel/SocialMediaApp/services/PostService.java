@@ -11,7 +11,7 @@ public interface PostService {
     void deletePost(Long postId,Long userId);
     PostDTO getPostById(Long postId);
     Page<PostDTO> getPostsByUser(Long userId, int page, int size);
-    Page<PostDTO> getPostsBySubscribedUsers(Long userId, int page, int size);
+    Page<PostDTO> getPostsByFollowingUsers(Long userId, int page, int size);
 
     List<String> getPostImagesByPost(Long postId);
 

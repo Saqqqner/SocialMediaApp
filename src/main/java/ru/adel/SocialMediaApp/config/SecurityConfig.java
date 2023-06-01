@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .authorizeRequests()
                         .antMatchers("/api/admin/*").hasRole("ADMIN")
                         .antMatchers("/api/auth/*").permitAll()
+                        .antMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().hasAnyRole("USER", "ADMIN")
                         .and()
                         .formLogin()

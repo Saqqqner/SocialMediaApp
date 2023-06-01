@@ -1,6 +1,7 @@
 package ru.adel.SocialMediaApp.util;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestControllerAdvice
+@Tag(name = "Обработка исключений", description = "API-точки для обработки исключений")
 public class RestExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException ex) {
