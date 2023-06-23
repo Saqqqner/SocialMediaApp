@@ -26,19 +26,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     public UserDTO registerUser(RegistrationRequest registrationRequest) {
-        User user = modelMapper.map(registrationRequest, User.class);
-        boolean emailExists = userRepository.existsByEmail(user.getEmail());
-        if (emailExists) {
-            throw new DuplicateUserException("User with the provided email already exists");
+
+        if (userRepository.existsByEmail(registrationRequest.getEmail())) {
+            throw new DuplicateUserException("Пользователь с указанным именем пользователя уже существует");
         }
 
         // Проверка существования пользователя по username
-        boolean usernameExists = userRepository.existsByUsername(user.getUsername());
-        if (usernameExists) {
-            throw new DuplicateUserException("User with the provided username already exists");
+        if (userRepository.existsByUsername(registrationRequest.getUsername())) {
+            throw new DuplicateUserException("Пользователь с указанным именем пользователя уже существует");
         }
 
 
+        User user = modelMapper.map(registrationRequest, User.class);
         // Установка пароля
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // Установка роли пользователя

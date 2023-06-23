@@ -10,12 +10,14 @@ import lombok.*;
 import java.util.Objects;
 import java.util.Set;
 
+@EqualsAndHashCode
 @Entity
 @Table(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

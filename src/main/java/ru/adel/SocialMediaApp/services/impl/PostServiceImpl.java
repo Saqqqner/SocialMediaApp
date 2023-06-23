@@ -38,7 +38,6 @@
             this.postImageRepository = postImageRepository;
         }
 
-        //Создаем пост
         @Override
         public PostDTO createPost(PostDTO postDTO, Long userId) {
             User user = userRepository.findById(userId)
@@ -182,5 +181,8 @@
 
             return imageUrls;
         }
+
+
+
 
     }

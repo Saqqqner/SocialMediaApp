@@ -16,24 +16,5 @@ import ru.adel.SocialMediaApp.models.User;
 @EnableJpaRepositories(basePackages = "ru.adel.SocialMediaApp.repositories")
 public class DatabaseConfig {
     // Дополнительные настройки, если необходимо
-    @Bean
-    public ModelMapper modelMapper() {
-        ModelMapper modelMapper = new ModelMapper();
 
-        // Конфигурация маппинга для игнорирования поля id при копировании из PostDTO в Post
-        modelMapper.createTypeMap(PostDTO.class, Post.class)
-                .addMappings(mapping -> mapping.skip(Post::setId));
-        modelMapper.createTypeMap(UserDTO.class, User.class)
-                .addMappings(mapping->mapping.skip(User::setId));
-        modelMapper.addMappings(new PropertyMap<Message, MessageDTO>() {
-            @Override
-            protected void configure() {
-                map().setRecipientId(source.getRecipient().getId());
-                map().setSenderId(source.getSender().getId());
-            }
-        });
-
-
-        return modelMapper;
-    }
 }
