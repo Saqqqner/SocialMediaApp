@@ -281,10 +281,12 @@ public class PostServiceImplTest {
     public void getPostById_ExistingPost_Success() {
         Long postId = 1L;
         Post post = new Post();
+        post.setText("Mama");
         post.setId(postId);
 
         PostDTO postDTO = new PostDTO();
         postDTO.setId(postId);
+        post.setText("Mama");
 
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
         when(modelMapper.map(post, PostDTO.class)).thenReturn(postDTO);

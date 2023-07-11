@@ -72,7 +72,8 @@ public class UserServiceImpl implements UserService {
 
 
         // Обновление данных пользователя
-        modelMapper.map(userDTO,existingUser);
+        existingUser.setUsername(userDTO.getUsername());
+        existingUser.setEmail(userDTO.getEmail());
         // Дополнительные поля
 
         // Сохранение обновленных данных в базе данных
