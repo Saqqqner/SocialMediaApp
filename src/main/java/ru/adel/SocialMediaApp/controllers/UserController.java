@@ -14,7 +14,6 @@ import ru.adel.SocialMediaApp.models.User;
 import ru.adel.SocialMediaApp.repositories.UserRepository;
 import ru.adel.SocialMediaApp.security.MyUserDetails;
 import ru.adel.SocialMediaApp.security.jwt.JWTUtil;
-import ru.adel.SocialMediaApp.services.impl.FriendRequestImpl;
 import ru.adel.SocialMediaApp.services.impl.UserServiceImpl;
 import ru.adel.SocialMediaApp.util.exception.IncorrectPasswordException;
 import ru.adel.SocialMediaApp.util.response.JWTResponse;

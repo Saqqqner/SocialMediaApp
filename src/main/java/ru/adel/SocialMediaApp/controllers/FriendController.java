@@ -9,7 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.adel.SocialMediaApp.dto.UserDTO;
 import ru.adel.SocialMediaApp.security.MyUserDetails;
-import ru.adel.SocialMediaApp.services.impl.FriendRequestImpl;
+import ru.adel.SocialMediaApp.services.impl.FriendRequestServiceImpl;
 
 import java.util.List;
 
@@ -18,9 +18,9 @@ import java.util.List;
 @Tag(name = "Друзья")
 public class FriendController {
 
-    private final FriendRequestImpl friendRequest;
+    private final FriendRequestServiceImpl friendRequest;
 
-    public FriendController(FriendRequestImpl friendRequest) {
+    public FriendController(FriendRequestServiceImpl friendRequest) {
         this.friendRequest = friendRequest;
     }
 

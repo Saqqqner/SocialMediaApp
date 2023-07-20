@@ -1,0 +1,22 @@
+version: '3'
+services:
+  pg11:
+    image: postgres
+    restart: always
+    ports:
+      - "5212:5432"
+    environment:
+      POSTGRES_DB: socialmedia_app_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mamamama
+  app:
+    container_name: SocialMediaApp
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - pg11
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://pg11:5432/socialmedia_app_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: mamamama

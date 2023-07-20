@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FriendRequestImpl implements FriendRequest {
+public class FriendRequestServiceImpl implements FriendRequest {
 
     private static final Logger logger = LoggerFactory.getLogger(FriendRequest.class);
 
@@ -22,7 +22,7 @@ public class FriendRequestImpl implements FriendRequest {
     private final ModelMapper modelMapper;
 
 
-    public FriendRequestImpl(UserRepository userRepository, ModelMapper modelMapper) {
+    public FriendRequestServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
@@ -83,7 +83,7 @@ public class FriendRequestImpl implements FriendRequest {
             userRepository.save(friend);
         }
 
-        return modelMapper.map(user, UserDTO.class);
+         return modelMapper.map(user, UserDTO.class);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class FriendRequestImpl implements FriendRequest {
         User friend = userRepository.findById(friendId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + friendId));
 
-        if (!user.getFriends().contains(friend)) {
+        if (!user.getFriends().contains(friend)&& user.getFollowers().contains(friend)) {
             user.getFriends().add(friend);//Добавляем друга в список друзей пользователя
             friend.getFriends().add(user); //Добавляем пользователя в список друзей данного друга
             friend.getFollowers().add(user);//Добавляем пользователя в список пользователей на которых подписан друг
