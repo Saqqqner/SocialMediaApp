@@ -203,7 +203,6 @@ public class FriendRequestServiceImplTest {
 
 }
 
-// Тесты для остальных методов (getFollowers, sendFriendRequest, cancelFriendRequest, acceptFriendRequest, removeFriend) аналогичны, нужно проверить правильность вызовов репозитория и маппера, а также возвращаемые значения.
 
 
 
