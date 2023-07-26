@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mamamama
   app:
-    container_name: SocialMediaApp
+    container_name: Social-Media-App
     build: .
     ports:
       - "8080:8080"

@@ -13,9 +13,10 @@
         </encoder>
     </appender>
     <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="FILE" />
+        <appender-ref ref="FILE"/>
         <queueSize>512</queueSize> <!-- Размер очереди асинхронной записи логов -->
-        <discardingThreshold>0</discardingThreshold> <!-- Порог отбрасывания записей логов (0 означает отсутствие отбрасывания) -->
+        <discardingThreshold>0
+        </discardingThreshold> <!-- Порог отбрасывания записей логов (0 означает отсутствие отбрасывания) -->
     </appender>
 
 
