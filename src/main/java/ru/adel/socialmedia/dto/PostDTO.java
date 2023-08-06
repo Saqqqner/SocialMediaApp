@@ -33,4 +33,9 @@ public class PostDTO {
     @Schema(description = "Изображения поста")
     @NotNull
     private Set<String> images;
+
+    @Schema(description = "Лайки поста")
+    private Long likesCount;
+
+
 }

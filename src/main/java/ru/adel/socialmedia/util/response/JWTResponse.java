@@ -8,7 +8,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-
 @Schema(description = "Ответ с JWT-токеном")
 public class JWTResponse {
     @Schema(description = "JWT-токен")

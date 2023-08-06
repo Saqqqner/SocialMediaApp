@@ -1,5 +1,6 @@
 package ru.adel.socialmedia.services.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ru.adel.socialmedia.dto.MessageDTO;
@@ -16,17 +17,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public MessageServiceImpl(MessageRepository messageRepository, UserRepository userRepository, ModelMapper modelMapper) {
-        this.messageRepository = messageRepository;
-        this.userRepository = userRepository;
-
-        this.modelMapper = modelMapper;
-    }
 
     @Override
     public MessageDTO createMessage(Long recipientId, Long senderId, String content) {

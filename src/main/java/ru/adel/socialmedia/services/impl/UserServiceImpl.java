@@ -1,5 +1,6 @@
 package ru.adel.socialmedia.services.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,26 +12,19 @@ import ru.adel.socialmedia.util.exception.DuplicateUserException;
 import ru.adel.socialmedia.util.exception.UserNotFoundException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private static final String MSG_USER = "User not found with ID: ";
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
-
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
-
-
     @Override
     public UserDTO getUserById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
 
         return modelMapper.map(user, UserDTO.class);
     }
@@ -39,19 +33,19 @@ public class UserServiceImpl implements UserService {
     public List<UserDTO> getAllUsersExceptCurrentUser(Long currentUserId) {
         List<User> allUsers = userRepository.findAll();
         User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + currentUserId));
+                .orElseThrow(() -> new UserNotFoundException(MSG_USER + currentUserId));
 
         return allUsers.stream()
                 .filter(user -> !user.equals(currentUser))
                 .map(user -> modelMapper.map(user, UserDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public UserDTO updateUser(Long userId, UserDTO userDTO) {
         // Проверка существования пользователя
         User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
 
         // Проверка, изменились ли email и username
         if (!existingUser.getEmail().equals(userDTO.getEmail())) {
@@ -87,7 +81,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long userId) {
         // Проверка существования пользователя
         userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
 
         // Удаление пользователя из базы данных
         userRepository.deleteById(userId);
@@ -96,7 +90,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO changePassword(Long userId, String newPassword) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+                .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
 
 
         // Обновление пароля

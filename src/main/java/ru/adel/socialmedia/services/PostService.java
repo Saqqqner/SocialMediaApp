@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import ru.adel.socialmedia.dto.PostDTO;
 
 import java.util.List;
+import java.util.Set;
 
 public interface PostService {
     PostDTO createPost(PostDTO postDTO, Long userId);
@@ -20,5 +21,10 @@ public interface PostService {
 
     List<String> getPostImagesByPost(Long postId);
 
+    void removeLikeFromPost(Long postId, Long userId);
+
+    void addLikeToPost(Long postId, Long userId);
+
+    Set<PostDTO> getLikedPostsByUser(Long userId);
 
 }

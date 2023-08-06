@@ -3,7 +3,6 @@ package ru.adel.socialmedia.controllers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,14 +27,12 @@ public class AuthController {
     private final RegistrationServiceImpl registrationService;
     private final JWTUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
-    private final ModelMapper modelMapper;
 
 
-    public AuthController(RegistrationServiceImpl registrationService, JWTUtil jwtUtil, AuthenticationManager authenticationManager, ModelMapper modelMapper) {
+    public AuthController(RegistrationServiceImpl registrationService, JWTUtil jwtUtil, AuthenticationManager authenticationManager) {
         this.registrationService = registrationService;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
-        this.modelMapper = modelMapper;
     }
 
     @PostMapping("/registration")
