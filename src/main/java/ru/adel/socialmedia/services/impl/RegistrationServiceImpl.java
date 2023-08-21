@@ -1,5 +1,6 @@
 package ru.adel.socialmedia.services.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,16 +13,12 @@ import ru.adel.socialmedia.services.RegistrationService;
 import ru.adel.socialmedia.util.exception.DuplicateUserException;
 
 @Service
+@RequiredArgsConstructor
 public class RegistrationServiceImpl implements RegistrationService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public RegistrationServiceImpl(ModelMapper modelMapper, UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.modelMapper = modelMapper;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     public UserDTO registerUser(RegistrationRequest registrationRequest) {

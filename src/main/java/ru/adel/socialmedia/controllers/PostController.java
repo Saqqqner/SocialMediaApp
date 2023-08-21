@@ -13,6 +13,7 @@ import ru.adel.socialmedia.security.MyUserDetails;
 import ru.adel.socialmedia.services.impl.PostServiceImpl;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -93,5 +94,30 @@ public class PostController {
     public ResponseEntity<List<String>> getPostImagesByPost(@PathVariable Long postId) {
         List<String> postImages = postService.getPostImagesByPost(postId);
         return ResponseEntity.ok(postImages);
+    }
+
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<String> addLikeToPost(Authentication authentication, @PathVariable Long postId) {
+        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+        Long userId = myUserDetails.getUser().getId();
+        postService.addLikeToPost(postId, userId);
+        return ResponseEntity.ok("Liked");
+    }
+
+    @DeleteMapping("/{postId}/like")
+    public ResponseEntity<String> removeLikeFromPost(Authentication authentication, @PathVariable Long postId) {
+        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+        Long userId = myUserDetails.getUser().getId();
+        postService.removeLikeFromPost(postId, userId);
+        return ResponseEntity.ok("Like removed");
+    }
+
+    @GetMapping("/like")
+    public ResponseEntity<Set<PostDTO>> getLikedPostsByUser(Authentication authentication) {
+        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+        Long userId = myUserDetails.getUser().getId();
+        Set<PostDTO> likedPosts = postService.getLikedPostsByUser(userId);
+        return ResponseEntity.ok(likedPosts);
+
     }
 }

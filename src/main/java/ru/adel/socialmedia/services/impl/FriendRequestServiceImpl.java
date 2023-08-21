@@ -1,5 +1,6 @@
 package ru.adel.socialmedia.services.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class FriendRequestServiceImpl implements FriendRequest {
 
     private static final Logger logger = LoggerFactory.getLogger(FriendRequest.class);
@@ -21,11 +23,6 @@ public class FriendRequestServiceImpl implements FriendRequest {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-
-    public FriendRequestServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
-        this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
-    }
 
     @Override
     public List<UserDTO> getFollowingUsers(Long userId) {

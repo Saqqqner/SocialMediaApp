@@ -1,18 +1,23 @@
 package ru.adel.socialmedia.services.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.adel.socialmedia.dto.PostDTO;
+import ru.adel.socialmedia.models.Like;
 import ru.adel.socialmedia.models.Post;
 import ru.adel.socialmedia.models.PostImage;
 import ru.adel.socialmedia.models.User;
+import ru.adel.socialmedia.repositories.LikeRepository;
 import ru.adel.socialmedia.repositories.PostImageRepository;
 import ru.adel.socialmedia.repositories.PostRepository;
 import ru.adel.socialmedia.repositories.UserRepository;
 import ru.adel.socialmedia.services.PostService;
+import ru.adel.socialmedia.util.exception.LikeAlreadyExistsException;
 import ru.adel.socialmedia.util.exception.PostNotFoundException;
 import ru.adel.socialmedia.util.exception.UnauthorizedException;
 import ru.adel.socialmedia.util.exception.UserNotFoundException;
@@ -24,23 +29,22 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
+    private static final String MSG_POST = "Post not found with ID: ";
+    private static final String MSG_USER = "User not found with ID: ";
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PostImageRepository postImageRepository;
-
-    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository, ModelMapper modelMapper, PostImageRepository postImageRepository) {
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
-        this.postImageRepository = postImageRepository;
-    }
+    private final LikeRepository likeRepository;
 
     @Override
+    @Transactional
     public PostDTO createPost(PostDTO postDTO, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+                .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
 
         Post post = modelMapper.map(postDTO, Post.class);
         post.setUser(user);
@@ -61,9 +65,11 @@ public class PostServiceImpl implements PostService {
     }
 
 
+    @Override
+    @Transactional
     public PostDTO updatePost(Long postId, PostDTO postDTO, Long userId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("Post not found with ID: " + postId));
+                .orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
 
         // Проверка авторизации пользователя
         if (!post.getUser().getId().equals(userId)) {
@@ -102,9 +108,10 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
+    @Transactional
     public void deletePost(Long postId, Long userId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("Post not found with ID: " + postId));
+                .orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
 
         // Проверка авторизации пользователя
         if (!post.getUser().getId().equals(userId)) {
@@ -117,7 +124,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDTO getPostById(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("Post not found with ID: " + postId));
+                .orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
 
         return modelMapper.map(post, PostDTO.class);
     }
@@ -125,7 +132,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<PostDTO> getPostsByUser(Long userId, int page, int size) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден с ID: " + userId));
+                .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
 
         // Создаем объект Pageable для пагинации и сортировки
         PageRequest pageRequest = PageRequest.of(page, size);
@@ -135,7 +142,7 @@ public class PostServiceImpl implements PostService {
 
         List<PostDTO> postDTOs = postPage.getContent().stream()
                 .map(post -> modelMapper.map(post, PostDTO.class))
-                .collect(Collectors.toList());
+                .toList();
 
         return new PageImpl<>(postDTOs, pageRequest, postPage.getTotalElements());
     }
@@ -143,7 +150,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<PostDTO> getPostsByFollowingUsers(Long userId, int page, int size) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+                .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
 
         // Получаем всех пользователей, на которых подписан текущий пользователь
         List<User> subscribedUsers = new ArrayList<>(user.getFollowing());
@@ -156,7 +163,7 @@ public class PostServiceImpl implements PostService {
 
         List<PostDTO> postDTOs = postPage.getContent().stream()
                 .map(post -> modelMapper.map(post, PostDTO.class))
-                .collect(Collectors.toList());
+                .toList();
 
         return new PageImpl<>(postDTOs, pageRequest, postPage.getTotalElements());
     }
@@ -165,18 +172,81 @@ public class PostServiceImpl implements PostService {
     public List<String> getPostImagesByPost(Long postId) {
         // Получаем пост по его идентификатору из postDTO
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("Post not found"));
+                .orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
 
         // Получаем все изображения, связанные с данным постом
         List<PostImage> postImages = postImageRepository.findByPost(post);
 
         // Преобразуем список PostImage в список URL-адресов
-        List<String> imageUrls = postImages.stream()
-                .map(PostImage::getImageUrl)
-                .collect(Collectors.toList());
 
-        return imageUrls;
+        return postImages.stream()
+                .map(PostImage::getImageUrl)
+                .toList();
     }
 
+    @Override
+    @Transactional
+    public void removeLikeFromPost(Long postId, Long userId) {
+        // Получите пост из базы данных по его id
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
 
+        // Найдите лайк, который нужно удалить
+        Like likeToRemove = post.getLikes().stream()
+                .filter(like -> like.getUser().getId().equals(user.getId()))
+                .findFirst()
+                .orElse(null);
+
+        if (likeToRemove != null) {
+            // Удалите лайк из множества лайков поста
+            post.getLikes().remove(likeToRemove);
+            user.getLikes().remove(likeToRemove);
+
+            // Удалите лайк из базы данных
+            likeRepository.delete(likeToRemove);
+
+            // Обновите счетчик лайков через метод репозитория
+            postRepository.updateLikesCount(postId);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void addLikeToPost(Long postId, Long userId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
+
+        likeRepository.findByPostAndUser(post, user)
+                .ifPresent(like -> {
+                    throw new LikeAlreadyExistsException("User with ID " + userId + " already liked post with ID " + postId);
+                });
+
+        // Создайте новый лайк
+        Like like = new Like();
+        like.setPost(post);
+        like.setUser(user);
+
+        // Добавьте лайк в множество лайков поста
+        post.getLikes().add(like);
+        user.getLikes().add(like);
+
+        // Сохраните лайк в базе данных
+        likeRepository.save(like);
+
+        // Обновите счетчик лайков через метод репозитория
+        postRepository.updateLikesCount(postId);
+    }
+
+    @Override
+    public Set<PostDTO> getLikedPostsByUser(Long userId) {
+        return likeRepository.findAllByUserId(userId)
+                .stream()
+                .map(Like::getPost)
+                .map(post -> modelMapper.map(post, PostDTO.class))
+                .collect(Collectors.toSet());
+    }
 }
