@@ -12,7 +12,6 @@ import ru.adel.socialmedia.services.FriendRequest;
 import ru.adel.socialmedia.util.exception.UserNotFoundException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +30,7 @@ public class FriendRequestServiceImpl implements FriendRequest {
 
         return user.getFollowing().stream()
                 .map(u -> modelMapper.map(u, UserDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -41,7 +40,7 @@ public class FriendRequestServiceImpl implements FriendRequest {
 
         return user.getFollowers().stream()
                 .map(u -> modelMapper.map(u, UserDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

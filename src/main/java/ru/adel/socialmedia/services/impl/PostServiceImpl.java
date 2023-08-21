@@ -43,8 +43,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public PostDTO createPost(PostDTO postDTO, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
 
         Post post = modelMapper.map(postDTO, Post.class);
         post.setUser(user);
@@ -68,8 +67,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public PostDTO updatePost(Long postId, PostDTO postDTO, Long userId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
 
         // Проверка авторизации пользователя
         if (!post.getUser().getId().equals(userId)) {
@@ -110,8 +108,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void deletePost(Long postId, Long userId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
 
         // Проверка авторизации пользователя
         if (!post.getUser().getId().equals(userId)) {
@@ -123,16 +120,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDTO getPostById(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
 
         return modelMapper.map(post, PostDTO.class);
     }
 
     @Override
     public Page<PostDTO> getPostsByUser(Long userId, int page, int size) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
 
         // Создаем объект Pageable для пагинации и сортировки
         PageRequest pageRequest = PageRequest.of(page, size);
@@ -140,17 +135,14 @@ public class PostServiceImpl implements PostService {
         // Получаем страницу постов для пользователя с пагинацией и сортировкой
         Page<Post> postPage = postRepository.findByUserOrderByCreatedAtDesc(user, pageRequest);
 
-        List<PostDTO> postDTOs = postPage.getContent().stream()
-                .map(post -> modelMapper.map(post, PostDTO.class))
-                .toList();
+        List<PostDTO> postDTOs = postPage.getContent().stream().map(post -> modelMapper.map(post, PostDTO.class)).toList();
 
         return new PageImpl<>(postDTOs, pageRequest, postPage.getTotalElements());
     }
 
     @Override
     public Page<PostDTO> getPostsByFollowingUsers(Long userId, int page, int size) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
 
         // Получаем всех пользователей, на которых подписан текущий пользователь
         List<User> subscribedUsers = new ArrayList<>(user.getFollowing());
@@ -161,9 +153,7 @@ public class PostServiceImpl implements PostService {
         // Получаем страницу постов с учетом подписанных пользователей и сортировки по времени создания
         Page<Post> postPage = postRepository.findByUserInOrderByCreatedAtDesc(subscribedUsers, pageRequest);
 
-        List<PostDTO> postDTOs = postPage.getContent().stream()
-                .map(post -> modelMapper.map(post, PostDTO.class))
-                .toList();
+        List<PostDTO> postDTOs = postPage.getContent().stream().map(post -> modelMapper.map(post, PostDTO.class)).toList();
 
         return new PageImpl<>(postDTOs, pageRequest, postPage.getTotalElements());
     }
@@ -171,43 +161,35 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<String> getPostImagesByPost(Long postId) {
         // Получаем пост по его идентификатору из postDTO
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
 
         // Получаем все изображения, связанные с данным постом
         List<PostImage> postImages = postImageRepository.findByPost(post);
 
         // Преобразуем список PostImage в список URL-адресов
 
-        return postImages.stream()
-                .map(PostImage::getImageUrl)
-                .toList();
+        return postImages.stream().map(PostImage::getImageUrl).toList();
     }
 
     @Override
     @Transactional
     public void removeLikeFromPost(Long postId, Long userId) {
         // Получите пост из базы данных по его id
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
 
         // Найдите лайк, который нужно удалить
-        Like likeToRemove = post.getLikes().stream()
-                .filter(like -> like.getUser().getId().equals(user.getId()))
-                .findFirst()
-                .orElse(null);
+        Like likeToRemove = post.getLikes().stream().filter(like -> like.getUser().getId().equals(user.getId())).findFirst().orElse(null);
 
         if (likeToRemove != null) {
-            // Удалите лайк из множества лайков поста
+            // Удаляем лайк из множества лайков поста
             post.getLikes().remove(likeToRemove);
             user.getLikes().remove(likeToRemove);
 
-            // Удалите лайк из базы данных
+            // Удаляем лайк из базы данных
             likeRepository.delete(likeToRemove);
 
-            // Обновите счетчик лайков через метод репозитория
+            // Обновляем счетчик лайков через метод репозитория
             postRepository.updateLikesCount(postId);
         }
     }
@@ -215,38 +197,31 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void addLikeToPost(Long postId, Long userId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(MSG_POST + postId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
 
-        likeRepository.findByPostAndUser(post, user)
-                .ifPresent(like -> {
-                    throw new LikeAlreadyExistsException("User with ID " + userId + " already liked post with ID " + postId);
-                });
+        likeRepository.findByPostAndUser(post, user).ifPresent(like -> {
+            throw new LikeAlreadyExistsException("User with ID " + userId + " already liked post with ID " + postId);
+        });
 
-        // Создайте новый лайк
+        // Создаем новый лайк
         Like like = new Like();
         like.setPost(post);
         like.setUser(user);
 
-        // Добавьте лайк в множество лайков поста
+        // Добавляем лайк в множество лайков поста
         post.getLikes().add(like);
         user.getLikes().add(like);
 
-        // Сохраните лайк в базе данных
+        // Сохраняем лайк в базе данных
         likeRepository.save(like);
 
-        // Обновите счетчик лайков через метод репозитория
+
         postRepository.updateLikesCount(postId);
     }
 
     @Override
     public Set<PostDTO> getLikedPostsByUser(Long userId) {
-        return likeRepository.findAllByUserId(userId)
-                .stream()
-                .map(Like::getPost)
-                .map(post -> modelMapper.map(post, PostDTO.class))
-                .collect(Collectors.toSet());
+        return likeRepository.findAllByUserId(userId).stream().map(Like::getPost).map(post -> modelMapper.map(post, PostDTO.class)).collect(Collectors.toSet());
     }
 }

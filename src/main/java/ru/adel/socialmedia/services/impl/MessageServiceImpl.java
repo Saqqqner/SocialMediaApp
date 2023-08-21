@@ -14,7 +14,6 @@ import ru.adel.socialmedia.util.exception.UnauthorizedException;
 import ru.adel.socialmedia.util.exception.UserNotFoundException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +68,7 @@ public class MessageServiceImpl implements MessageService {
                     messageDTO.setRecipientId(message.getRecipient().getId());
                     return messageDTO;
                 })
-                .collect(Collectors.toList());
+                .toList();
 
     }
 

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.adel.socialmedia.dto.ChangePasswordDTO;
@@ -49,8 +49,7 @@ public class UserController {
     @GetMapping("/other-users")
     @Operation(summary = "Получение всех пользователей, кроме текущего")
     @ApiResponse(responseCode = "200", description = "Успешно получены пользователи")
-    public ResponseEntity<List<UserDTO>> getAllUsersExceptCurrent(Authentication authentication) {
-        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    public ResponseEntity<List<UserDTO>> getAllUsersExceptCurrent(@AuthenticationPrincipal MyUserDetails myUserDetails) {
         Long userId = myUserDetails.getUser().getId();
         List<UserDTO> users = userService.getAllUsersExceptCurrentUser(userId);
         return new ResponseEntity<>(users, HttpStatus.OK);
@@ -59,8 +58,7 @@ public class UserController {
     @PutMapping("/update")
     @Operation(summary = "Обновление данных пользователя")
     @ApiResponse(responseCode = "200", description = "Данные пользователя успешно обновлены")
-    public ResponseEntity<?> updateUser(Authentication authentication, @Valid @RequestBody UserDTO userDTO) {
-        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    public ResponseEntity<?> updateUser(@AuthenticationPrincipal MyUserDetails myUserDetails, @Valid @RequestBody UserDTO userDTO) {
         Long userId = myUserDetails.getUser().getId();
         userService.deleteUser(userId);
 
@@ -84,8 +82,7 @@ public class UserController {
     @DeleteMapping("/delete")
     @Operation(summary = "Удаление пользователя")
     @ApiResponse(responseCode = "204", description = "Пользователь успешно удален")
-    public ResponseEntity<?> deleteUser(Authentication authentication) {
-        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    public ResponseEntity<?> deleteUser(@AuthenticationPrincipal MyUserDetails myUserDetails) {
         Long userId = myUserDetails.getUser().getId();
         userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -94,9 +91,8 @@ public class UserController {
     @PutMapping("/password")
     @Operation(summary = "Изменение пароля пользователя")
     @ApiResponse(responseCode = "200", description = "Пароль успешно изменен")
-    public ResponseEntity<UserDTO> changePassword(Authentication authentication, @RequestBody ChangePasswordDTO changePasswordDTO) {
+    public ResponseEntity<UserDTO> changePassword(@AuthenticationPrincipal MyUserDetails myUserDetails, @RequestBody ChangePasswordDTO changePasswordDTO) {
         // Проверка текущего пароля
-        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         Long userId = myUserDetails.getUser().getId();
         Optional<User> userOptional = userRepository.findById(userId);
         User user = userOptional.get();

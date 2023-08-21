@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.adel.socialmedia.dto.MessageDTO;
 import ru.adel.socialmedia.security.MyUserDetails;
@@ -27,8 +27,7 @@ public class MessageController {
     @PostMapping("/{recipientId}")
     @Operation(summary = "Создание сообщения")
     @ApiResponse(responseCode = "200", description = "Сообщение успешно создано")
-    public ResponseEntity<MessageDTO> createMessage(@RequestBody MessageDTO messageDTO, @PathVariable Long recipientId, Authentication authentication) {
-        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    public ResponseEntity<MessageDTO> createMessage(@AuthenticationPrincipal MyUserDetails myUserDetails, @RequestBody MessageDTO messageDTO, @PathVariable Long recipientId) {
         Long userId = myUserDetails.getUser().getId();
         String content = messageDTO.getContent();
         MessageDTO createdMessage = messageService.createMessage(recipientId, userId, content);
@@ -38,20 +37,16 @@ public class MessageController {
     @DeleteMapping("/{messageId}")
     @Operation(summary = "Удаление сообщения")
     @ApiResponse(responseCode = "204", description = "Сообщение успешно удалено")
-    public ResponseEntity<Void> deleteMessage(@PathVariable Long messageId, Authentication authentication) {
-        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
-        Long userId = userDetails.getUser().getId();
-
+    public ResponseEntity<Void> deleteMessage(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long messageId) {
+        Long userId = myUserDetails.getUser().getId();
         messageService.deleteMessage(messageId, userId);
-
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{recipientId}")
     @Operation(summary = "Получение сообщений по отправителю и получателю")
     @ApiResponse(responseCode = "200", description = "Успешно получены сообщения")
-    public ResponseEntity<List<MessageDTO>> getMessagesBySenderAndRecipient(@PathVariable Long recipientId, Authentication authentication) {
-        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    public ResponseEntity<List<MessageDTO>> getMessagesBySenderAndRecipient(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long recipientId) {
         Long userId = myUserDetails.getUser().getId();
         List<MessageDTO> messages = messageService.getMessagesBySenderAndRecipient(userId, recipientId);
         return ResponseEntity.status(HttpStatus.OK).body(messages);
