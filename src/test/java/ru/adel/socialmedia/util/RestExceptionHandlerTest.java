@@ -12,12 +12,12 @@ import ru.adel.socialmedia.util.response.ErrorResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-public class RestExceptionHandlerTest {
+class RestExceptionHandlerTest {
     @InjectMocks
     private RestExceptionHandler restExceptionHandler;
 
     @Test
-    public void handleUnauthorizedException_ReturnsUnauthorizedResponse() {
+    void handleUnauthorizedException_ReturnsUnauthorizedResponse() {
         UnauthorizedException ex = new UnauthorizedException("Unauthorized");
         ResponseEntity<ErrorResponse> response = restExceptionHandler.handleUnauthorizedException(ex);
 
@@ -28,7 +28,7 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    public void handleIncorrectPasswordException_ReturnsUnauthorizedResponse() {
+    void handleIncorrectPasswordException_ReturnsUnauthorizedResponse() {
         IncorrectPasswordException ex = new IncorrectPasswordException("Incorrect password");
         ResponseEntity<ErrorResponse> response = restExceptionHandler.handleIncorrectPasswordException(ex);
 
@@ -39,7 +39,7 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    public void handleDuplicateUserException_ReturnsBadRequestResponse() {
+    void handleDuplicateUserException_ReturnsBadRequestResponse() {
         DuplicateUserException ex = new DuplicateUserException("User already exists");
         ResponseEntity<ErrorResponse> response = restExceptionHandler.handleDuplicateUserException(ex);
 
@@ -50,7 +50,7 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    public void handleBadRequestException_ReturnsBadRequestResponse() {
+    void handleBadRequestException_ReturnsBadRequestResponse() {
         BadRequestException ex = new BadRequestException("Bad request");
         ResponseEntity<ErrorResponse> response = restExceptionHandler.handleBadRequestException(ex);
 
@@ -61,7 +61,7 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    public void handleUserNotFoundException_ReturnsNotFoundResponse() {
+    void handleUserNotFoundException_ReturnsNotFoundResponse() {
         UserNotFoundException ex = new UserNotFoundException("User not found");
         ResponseEntity<ErrorResponse> response = restExceptionHandler.handleUsernameNotFoundException(ex);
 
@@ -72,7 +72,7 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    public void handleInternalServerException_ReturnsInternalServerErrorResponse() {
+    void handleInternalServerException_ReturnsInternalServerErrorResponse() {
         InternalServerException ex = new InternalServerException("Internal server error");
         ResponseEntity<ErrorResponse> response = restExceptionHandler.handleInternalServerException(ex);
 

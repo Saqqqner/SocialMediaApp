@@ -1,12 +1,10 @@
 package ru.adel.socialmedia.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
+@EqualsAndHashCode(exclude = "post")
 @Entity
 @Table(name = "post_images")
 @AllArgsConstructor
@@ -25,6 +23,18 @@ public class PostImage {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
+
+
+
+    @Override
+    public String toString() {
+        return "PostImage{" +
+                "id=" + id +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", post=" + post +
+                '}';
+    }
+
 
 
 }

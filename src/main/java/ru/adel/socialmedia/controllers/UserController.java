@@ -16,6 +16,7 @@ import ru.adel.socialmedia.security.MyUserDetails;
 import ru.adel.socialmedia.security.jwt.JWTUtil;
 import ru.adel.socialmedia.services.impl.UserServiceImpl;
 import ru.adel.socialmedia.util.exception.IncorrectPasswordException;
+import ru.adel.socialmedia.util.exception.UserNotFoundException;
 import ru.adel.socialmedia.util.response.JWTResponse;
 
 import javax.validation.Valid;
@@ -46,7 +47,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userDTO);
     }
 
-    @GetMapping("/other-users")
+    @GetMapping()
     @Operation(summary = "Получение всех пользователей, кроме текущего")
     @ApiResponse(responseCode = "200", description = "Успешно получены пользователи")
     public ResponseEntity<List<UserDTO>> getAllUsersExceptCurrent(@AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -58,22 +59,16 @@ public class UserController {
     @PutMapping("/update")
     @Operation(summary = "Обновление данных пользователя")
     @ApiResponse(responseCode = "200", description = "Данные пользователя успешно обновлены")
-    public ResponseEntity<?> updateUser(@AuthenticationPrincipal MyUserDetails myUserDetails, @Valid @RequestBody UserDTO userDTO) {
+    public ResponseEntity<JWTResponse> updateUser(@AuthenticationPrincipal MyUserDetails myUserDetails, @Valid @RequestBody  UserDTO userDTO) {
         Long userId = myUserDetails.getUser().getId();
-        userService.deleteUser(userId);
-
         UserDTO existingUser = userService.getUserById(userId);
-
-        // Примените изменения только к определенным полям
         if (userDTO.getUsername() != null) {
             existingUser.setUsername(userDTO.getUsername());
         }
         if (userDTO.getEmail() != null) {
             existingUser.setEmail(userDTO.getEmail());
         }
-
         UserDTO updatedUser = userService.updateUser(userId, existingUser);
-
         String newToken = jwtUtil.generateToken(updatedUser.getUsername());
         JWTResponse jwtResponse = new JWTResponse(newToken);
         return ResponseEntity.status(HttpStatus.OK).body(jwtResponse);
@@ -82,7 +77,7 @@ public class UserController {
     @DeleteMapping("/delete")
     @Operation(summary = "Удаление пользователя")
     @ApiResponse(responseCode = "204", description = "Пользователь успешно удален")
-    public ResponseEntity<?> deleteUser(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal MyUserDetails myUserDetails) {
         Long userId = myUserDetails.getUser().getId();
         userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -91,17 +86,18 @@ public class UserController {
     @PutMapping("/password")
     @Operation(summary = "Изменение пароля пользователя")
     @ApiResponse(responseCode = "200", description = "Пароль успешно изменен")
-    public ResponseEntity<UserDTO> changePassword(@AuthenticationPrincipal MyUserDetails myUserDetails, @RequestBody ChangePasswordDTO changePasswordDTO) {
-        // Проверка текущего пароля
+    public ResponseEntity<UserDTO> changePassword(@AuthenticationPrincipal MyUserDetails myUserDetails, @RequestBody @Valid ChangePasswordDTO changePasswordDTO) {
         Long userId = myUserDetails.getUser().getId();
         Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()){
+            throw new UserNotFoundException("User not found with ID: " + userId);
+        }
         User user = userOptional.get();
 
         if (!passwordEncoder.matches(changePasswordDTO.getCurrentPassword(), user.getPassword())) {
             throw new IncorrectPasswordException("Неверный текущий пароль");
         }
 
-        // Вызов сервисного метода для изменения пароля
         UserDTO updatedUserDTO = userService.changePassword(userId, changePasswordDTO.getNewPassword());
 
         return ResponseEntity.status(HttpStatus.OK).body(updatedUserDTO);

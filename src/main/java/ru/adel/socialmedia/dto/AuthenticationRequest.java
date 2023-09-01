@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @AllArgsConstructor
@@ -15,9 +16,11 @@ import javax.validation.constraints.Size;
 @Schema(description = "Модель запроса аутентификации")
 public class AuthenticationRequest {
     @Schema(description = "Имя пользователя")
+    @Size(min = 3, message = "Имя пользователя должно содержать не менее 3 символов")
+    @NotNull
     private String username;
 
     @Schema(description = "Пароль")
-    @Size(min = 6, max = 12)
+    @Size(min = 8, max = 16, message = "Размер должен находиться в диапазоне от 8 до 16 символов")
     private String password;
 }

@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
-
 
 @AllArgsConstructor
 @Getter
@@ -19,10 +17,8 @@ public class PostImageDTO {
     private Long id;
 
     @Schema(description = "URL изображения")
-    @NotNull
     private String imageUrl;
 
     @Schema(description = "Пост")
-    @NotNull
     private PostDTO post;
 }

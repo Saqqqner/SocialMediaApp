@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Size;
 import java.util.Objects;
 import java.util.Set;
 
@@ -23,16 +21,15 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, unique = true)
-    @Size(min = 3, message = "Имя пользователя должно содержать не менее 3 символов")
+    @Column(nullable = false,unique = true)
     private String username;
+
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, unique = true)
-    @Email(message = "Некорректный адрес электронной почты  ")
+
+    @Column(nullable = false,unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -87,5 +84,21 @@ public class User {
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (role != null ? role.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                ", posts=" + posts +
+                ", friends=" + friends +
+                ", followers=" + followers +
+                ", following=" + following +
+                ", likes=" + likes +
+                '}';
     }
 }

@@ -30,7 +30,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class PostServiceImplTest {
+class PostServiceImplTest {
 
     @InjectMocks
     private PostServiceImpl postService;
@@ -50,7 +50,7 @@ public class PostServiceImplTest {
 
 
     @Test
-    public void createPost_ValidData_SuccessfullyCreated() {
+    void createPost_ValidData_SuccessfullyCreated() {
         // Создаем данные для теста
         PostDTO postDTO = new PostDTO();
         postDTO.setTitle("Test Post");
@@ -109,7 +109,7 @@ public class PostServiceImplTest {
     }
 
     @Test
-    public void createPost_UserNotFound() {
+    void createPost_UserNotFound() {
         Long userId = 1L;
         PostDTO postDTO = new PostDTO();
         postDTO.setTitle("Test Post");
@@ -127,7 +127,7 @@ public class PostServiceImplTest {
     }
 
     @Test
-    public void updatePost_PostNotFound() {
+    void updatePost_PostNotFound() {
         Long postId = 1L;
         Long userId = 1L;
         PostDTO postDTO = new PostDTO();
@@ -145,7 +145,7 @@ public class PostServiceImplTest {
     }
 
     @Test
-    public void updatePost_Unauthorized() {
+    void updatePost_Unauthorized() {
         Long postId = 1L;
         Long userId = 1L;
         PostDTO postDTO = new PostDTO();
@@ -171,7 +171,7 @@ public class PostServiceImplTest {
     }
 
     @Test
-    public void updatePost_ValidData_SuccessfullyUpdated() {
+    void updatePost_ValidData_SuccessfullyUpdated() {
         Long userId = 1L;
         Long postId = 1L;
         PostDTO postDTO = new PostDTO();
@@ -224,7 +224,7 @@ public class PostServiceImplTest {
     }
 
     @Test
-    public void deletePost_SuccessfullyDelete() {
+    void deletePost_SuccessfullyDelete() {
         Long postId = 1L;
         Long userId = 4L;
 
@@ -246,7 +246,7 @@ public class PostServiceImplTest {
     }
 
     @Test
-    public void deletePost_PostNotFound_PostNotFoundExceptionThrown() {
+    void deletePost_PostNotFound_PostNotFoundExceptionThrown() {
         Long userId = 1L;
         Long postId = 1L;
 
@@ -256,7 +256,7 @@ public class PostServiceImplTest {
     }
 
     @Test
-    public void deletePost_UnauthorizedUser_UnauthorizedExceptionThrown() {
+    void deletePost_UnauthorizedUser_UnauthorizedExceptionThrown() {
         // Arrange
         Long postId = 1L;
         Long userId = 2L;
@@ -275,7 +275,7 @@ public class PostServiceImplTest {
     }
 
     @Test
-    public void getPostById_ExistingPost_Success() {
+    void getPostById_ExistingPost_Success() {
         Long postId = 1L;
         Post post = new Post();
         post.setText("Mama");
@@ -297,7 +297,7 @@ public class PostServiceImplTest {
     }
 
     @Test
-    public void getPostById_InvalidId_ThrowsPostNotFoundException() {
+    void getPostById_InvalidId_ThrowsPostNotFoundException() {
         Long postId = 1L;
 
         when(postRepository.findById(postId)).thenReturn(Optional.empty());
@@ -308,7 +308,7 @@ public class PostServiceImplTest {
     }
 
     @Test
-    public void getPostsByUser_ExistingUser_ReturnsPageOfPostDTOs() {
+    void getPostsByUser_ExistingUser_ReturnsPageOfPostDTOs() {
         // Arrange
         Long userId = 1L;
         int page = 0;
@@ -366,7 +366,7 @@ public class PostServiceImplTest {
     }
 
     @Test
-    public void getPostsByUser_NonExistingUser_ThrowsUserNotFoundException() {
+    void getPostsByUser_NonExistingUser_ThrowsUserNotFoundException() {
         // Arrange
         Long userId = 1L;
         int page = 0;
@@ -382,7 +382,7 @@ public class PostServiceImplTest {
     }
 
     @Test
-    public void getPostsByFollowingUsers_ExistingUser_ReturnsPageOfPostDTOs() {
+    void getPostsByFollowingUsers_ExistingUser_ReturnsPageOfPostDTOs() {
         // Arrange
         Long userId = 1L;
         int page = 0;
@@ -436,7 +436,7 @@ public class PostServiceImplTest {
     }
 
     @Test
-    public void getPostImagesByPost_ExistingPost_ReturnsListOfImageUrls() {
+    void getPostImagesByPost_ExistingPost_ReturnsListOfImageUrls() {
         // Arrange
         Long postId = 1L;
 

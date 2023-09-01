@@ -6,7 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @AllArgsConstructor
@@ -16,15 +17,15 @@ import javax.validation.constraints.Size;
 @Schema(description = "Модель запроса регистрации")
 public class RegistrationRequest {
     @Schema(description = "Имя пользователя")
-    @NotBlank
+    @NotNull
+    @Size(min = 3, message = "Имя пользователя должно содержать не менее 3 символов")
     private String username;
 
     @Schema(description = "Email")
-    @NotBlank
+    @Email(message = "Должен быть формат почты")
     private String email;
 
     @Schema(description = "Пароль")
-    @NotBlank
-    @Size(min = 6, max = 12)
+    @Size(min = 8, max = 16, message = "Размер должен находиться в диапазоне от 8 до 16 символов")
     private String password;
 }

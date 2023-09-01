@@ -12,6 +12,7 @@ import ru.adel.socialmedia.dto.MessageDTO;
 import ru.adel.socialmedia.security.MyUserDetails;
 import ru.adel.socialmedia.services.impl.MessageServiceImpl;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -27,7 +28,7 @@ public class MessageController {
     @PostMapping("/{recipientId}")
     @Operation(summary = "Создание сообщения")
     @ApiResponse(responseCode = "200", description = "Сообщение успешно создано")
-    public ResponseEntity<MessageDTO> createMessage(@AuthenticationPrincipal MyUserDetails myUserDetails, @RequestBody MessageDTO messageDTO, @PathVariable Long recipientId) {
+    public ResponseEntity<MessageDTO> createMessage(@AuthenticationPrincipal MyUserDetails myUserDetails, @RequestBody @Valid MessageDTO messageDTO, @PathVariable Long recipientId) {
         Long userId = myUserDetails.getUser().getId();
         String content = messageDTO.getContent();
         MessageDTO createdMessage = messageService.createMessage(recipientId, userId, content);

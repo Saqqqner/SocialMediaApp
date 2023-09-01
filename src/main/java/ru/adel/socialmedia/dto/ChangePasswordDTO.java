@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 
@@ -20,12 +19,10 @@ public class ChangePasswordDTO {
     private Long userId;
 
     @Schema(description = "Текущий пароль")
-    @NotBlank
-    @Size(min = 6, max = 12)
+    @Size(min = 8, max = 16, message = "Размер должен находиться в диапазоне от 8 до 16 символов")
     private String currentPassword;
 
     @Schema(description = "Новый пароль")
-    @NotBlank
-    @Size(min = 6, max = 12)
+    @Size(min = 8, max = 16, message = "Размер должен находиться в диапазоне от 8 до 16 символов")
     private String newPassword;
 }

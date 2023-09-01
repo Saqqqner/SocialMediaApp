@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class MessageServiceImplTest {
+class MessageServiceImplTest {
 
     @InjectMocks
     private MessageServiceImpl messageService;
@@ -41,7 +41,7 @@ public class MessageServiceImplTest {
     private ModelMapper modelMapper;
 
     @Test
-    public void createMessage_ValidData_SuccessfullyCreated() {
+    void createMessage_ValidData_SuccessfullyCreated() {
         // Arrange
         Long recipientId = 1L;
         Long senderId = 2L;
@@ -91,7 +91,7 @@ public class MessageServiceImplTest {
     }
 
     @Test
-    public void deleteMessage_ValidData_MessageDeleted() {
+    void deleteMessage_ValidData_MessageDeleted() {
         // Arrange
         Long messageId = 1L;
         Long userId = 2L;
@@ -114,7 +114,7 @@ public class MessageServiceImplTest {
     }
 
     @Test
-    public void deleteMessage_MessageNotFound_MessageNotFoundExceptionThrown() {
+    void deleteMessage_MessageNotFound_MessageNotFoundExceptionThrown() {
         // Arrange
         Long messageId = 1L;
         Long userId = 2L;
@@ -126,7 +126,7 @@ public class MessageServiceImplTest {
     }
 
     @Test
-    public void deleteMessage_UnauthorizedUser_UnauthorizedExceptionThrown() {
+    void deleteMessage_UnauthorizedUser_UnauthorizedExceptionThrown() {
         // Arrange
         Long messageId = 1L;
         Long userId = 2L;
@@ -145,7 +145,7 @@ public class MessageServiceImplTest {
     }
 
     @Test
-    public void getMessagesBySenderAndRecipient_ValidData_ReturnsMessageDTOList() {
+    void getMessagesBySenderAndRecipient_ValidData_ReturnsMessageDTOList() {
         // Arrange
         Long userId = 1L;
         Long recipientId = 2L;

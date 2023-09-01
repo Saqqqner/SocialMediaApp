@@ -27,4 +27,14 @@ public class Like {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+
+
+    @Override
+    public String toString() {
+        return "Like{" +
+                "id=" + id +
+                ", user=" + user +
+                ", post=" + post +
+                '}';
+    }
 }

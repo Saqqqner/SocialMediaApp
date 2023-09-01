@@ -36,4 +36,14 @@ public class Message {
     private User recipient;
 
 
+    @Override
+    public String toString() {
+        return "Message{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", createdAt=" + createdAt +
+                ", sender=" + sender +
+                ", recipient=" + recipient +
+                '}';
+    }
 }

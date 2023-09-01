@@ -35,7 +35,7 @@ class UserServiceImplTest {
     private PasswordEncoder passwordEncoder;
 
     @Test
-    public void getUserById_ExistingUser_Success() {
+    void getUserById_ExistingUser_Success() {
 
         Long userId = 1L;
 
@@ -61,7 +61,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void getUserById_NonExistingUser_ThrowsUserNotFoundException() {
+    void getUserById_NonExistingUser_ThrowsUserNotFoundException() {
         Long fakeUserId = 1L;
         Long userId = 3L;
 
@@ -75,7 +75,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void getAllUsersExceptCurrentUser_NotEmptyList_Success() {
+    void getAllUsersExceptCurrentUser_NotEmptyList_Success() {
         // Arrange
         Long currentUserId = 1L;
 
@@ -120,7 +120,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void getAllUsersExceptCurrentUser_EmptyList_Success() {
+    void getAllUsersExceptCurrentUser_EmptyList_Success() {
         // Arrange
         Long currentUserId = 1L;
 
@@ -145,7 +145,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void updateUser_ExistingUser_Success() {
+    void updateUser_ExistingUser_Success() {
         // Arrange
         Long userId = 1L;
         UserDTO userDTO = new UserDTO();
@@ -184,7 +184,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void deleteUser_SuccessfullyDelete() {
+    void deleteUser_SuccessfullyDelete() {
         Long userId = 1L;
 
         User user = new User();
@@ -200,7 +200,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void deleteUser_UserNotFound_UserNotFoundExceptionThrown() {
+    void deleteUser_UserNotFound_UserNotFoundExceptionThrown() {
         Long userId = 1L;
 
         when(userRepository.findById(userId)).thenReturn(Optional.empty());

@@ -29,6 +29,12 @@ public class RestExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
+    @ExceptionHandler(JwtAuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleJwtAuthenticationException(JwtAuthenticationException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
     @ExceptionHandler(IncorrectPasswordException.class)
     public ResponseEntity<ErrorResponse> handleIncorrectPasswordException(IncorrectPasswordException ex) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
@@ -101,23 +107,5 @@ public class RestExceptionHandler {
         ValidationErrorResponse errorResponse = new ValidationErrorResponse(HttpStatus.BAD_REQUEST, "Validation failed", validationErrors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
-//    @ExceptionHandler(ConstraintViolationException.class)
-//    public ResponseEntity<ValidationErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
-//        // Получаем нарушения ограничений из исключения
-//        Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
-//
-//        // Создаем список ошибок валидации
-//        List<ValidationError> validationErrors = new ArrayList<>();
-//        for (ConstraintViolation<?> violation : violations) {
-//            String fieldName = violation.getPropertyPath().toString();
-//            String errorMessage = violation.getMessage();
-//            ValidationError validationError = new ValidationError(fieldName, errorMessage);
-//            validationErrors.add(validationError);
-//        }
-//
-//        // Создаем ответ с информацией об ошибках валидации
-//        ValidationErrorResponse errorResponse = new ValidationErrorResponse(HttpStatus.BAD_REQUEST, "Ошибка валидации", validationErrors);
-//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-//    }
 }
 

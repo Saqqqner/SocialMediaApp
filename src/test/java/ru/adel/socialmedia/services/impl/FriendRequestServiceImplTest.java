@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class FriendRequestServiceImplTest {
+class FriendRequestServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
@@ -57,7 +57,7 @@ public class FriendRequestServiceImplTest {
 
 
     @Test
-    public void getFollowingUsers_ExistingUser_ReturnsListOfFollowingUsers() {
+    void getFollowingUsers_ExistingUser_ReturnsListOfFollowingUsers() {
         // Arrange
         Set<User> followingUsers = new HashSet<>();
         followingUsers.add(new User());
@@ -77,7 +77,7 @@ public class FriendRequestServiceImplTest {
     }
 
     @Test
-    public void getFollowingUsers_NonExistingUser_ThrowsUserNotFoundException() {
+    void getFollowingUsers_NonExistingUser_ThrowsUserNotFoundException() {
         // Arrange
         Long userId = 4L;
 
@@ -91,7 +91,7 @@ public class FriendRequestServiceImplTest {
 
 
     @Test
-    public void getFollowersUsers_ExistingUser_ReturnsListOfFollowersUsers() {
+    void getFollowersUsers_ExistingUser_ReturnsListOfFollowersUsers() {
         // Arrange
         Set<User> followers = new HashSet<>();
         followers.add(new User());
@@ -110,7 +110,7 @@ public class FriendRequestServiceImplTest {
     }
 
     @Test
-    public void sendFriendRequest() {
+    void sendFriendRequest() {
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(userRepository.findById(friend.getId())).thenReturn(Optional.of(friend));
         when(modelMapper.map(any(User.class), eq(UserDTO.class))).thenReturn(new UserDTO());
@@ -127,7 +127,7 @@ public class FriendRequestServiceImplTest {
     }
 
     @Test
-    public void cancelFriendRequest() {
+    void cancelFriendRequest() {
         user.getFollowing().add(friend);
         friend.getFollowers().add(user);
 
@@ -149,7 +149,7 @@ public class FriendRequestServiceImplTest {
     }
 
     @Test
-    public void acceptFriendRequest() {
+    void acceptFriendRequest() {
         friend.getFollowing().add(user);
         user.getFollowers().add(friend);
 
@@ -172,7 +172,7 @@ public class FriendRequestServiceImplTest {
     }
 
     @Test
-    public void removeFriend() {
+    void removeFriend() {
         friend.getFriends().add(user);
         user.getFriends().add(friend);
         friend.getFollowing().add(user);

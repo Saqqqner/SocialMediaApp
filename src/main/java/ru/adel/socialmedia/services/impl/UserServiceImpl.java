@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.adel.socialmedia.dto.UserDTO;
 import ru.adel.socialmedia.models.User;
 import ru.adel.socialmedia.repositories.UserRepository;
@@ -22,14 +23,15 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional(readOnly = true)
     public UserDTO getUserById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
-
         return modelMapper.map(user, UserDTO.class);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDTO> getAllUsersExceptCurrentUser(Long currentUserId) {
         List<User> allUsers = userRepository.findAll();
         User currentUser = userRepository.findById(currentUserId)
@@ -42,29 +44,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDTO updateUser(Long userId, UserDTO userDTO) {
         // Проверка существования пользователя
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
-
-        // Проверка, изменились ли email и username
-        if (!existingUser.getEmail().equals(userDTO.getEmail())) {
-            // Проверка существования пользователя по новому email
-            boolean emailExists = userRepository.existsByEmail(userDTO.getEmail());
-            if (emailExists) {
-                throw new DuplicateUserException("User with the provided email already exists");
-            }
-        }
-
-        if (!existingUser.getUsername().equals(userDTO.getUsername())) {
-            // Проверка существования пользователя по новому username
-            boolean usernameExists = userRepository.existsByUsername(userDTO.getUsername());
-            if (usernameExists) {
-                throw new DuplicateUserException("User with the provided username already exists");
-            }
-        }
-
-
+        checkAndUpdateEmail(existingUser, userDTO.getEmail());
+        checkAndUpdateUsername(existingUser,userDTO.getUsername());
         // Обновление данных пользователя
         existingUser.setUsername(userDTO.getUsername());
         existingUser.setEmail(userDTO.getEmail());
@@ -78,27 +64,49 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long userId) {
         // Проверка существования пользователя
         userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
-
         // Удаление пользователя из базы данных
         userRepository.deleteById(userId);
     }
 
     @Override
+    @Transactional
     public UserDTO changePassword(Long userId, String newPassword) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(MSG_USER + userId));
-
-
         // Обновление пароля
         String encodedPassword = passwordEncoder.encode(newPassword);
         user.setPassword(encodedPassword);
-
         // Сохранение пользователя с обновленным паролем в базе данных
         User updatedUser = userRepository.save(user);
         return modelMapper.map(updatedUser, UserDTO.class);
     }
+
+
+    private void checkAndUpdateEmail(User existingUser, String newEmail) {
+        if (!existingUser.getEmail().equals(newEmail)) {
+            boolean emailExists = userRepository.existsByEmail(newEmail);
+            if (emailExists) {
+                throw new DuplicateUserException("User with the provided email already exists");
+            }
+            existingUser.setEmail(newEmail);
+        }
+    }
+
+
+    private void checkAndUpdateUsername(User existingUser, String newUsername) {
+        if (!existingUser.getUsername().equals(newUsername)) {
+            boolean usernameExists = userRepository.existsByUsername(newUsername);
+            if (usernameExists) {
+                throw new DuplicateUserException("User with the provided username already exists");
+            }
+            existingUser.setUsername(newUsername);
+        }
+    }
+
 }
+

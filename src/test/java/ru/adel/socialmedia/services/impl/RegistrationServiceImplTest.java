@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class RegistrationServiceImplTest {
+class RegistrationServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
@@ -62,7 +62,7 @@ public class RegistrationServiceImplTest {
     }
 
     @Test
-    public void testRegisterUser() {
+    void testRegisterUser() {
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
         when(modelMapper.map(user, UserDTO.class)).thenReturn(actualUserDTO);
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -83,7 +83,7 @@ public class RegistrationServiceImplTest {
     }
 
     @Test
-    public void testRegisterUser_UserExists() {
+    void testRegisterUser_UserExists() {
         String username = registrationRequest.getUsername();
         when(userRepository.existsByUsername(username)).thenReturn(true);
 

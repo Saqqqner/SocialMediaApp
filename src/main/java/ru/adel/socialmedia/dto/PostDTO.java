@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
 
@@ -17,9 +16,7 @@ import java.util.Set;
 @Schema(description = "Модель поста")
 public class PostDTO {
     @Schema(description = "Идентификатор поста")
-    @Min(1)
     private Long id;
-
 
     @Schema(description = "Заголовок поста")
     @NotNull
@@ -31,7 +28,6 @@ public class PostDTO {
     private String text;
 
     @Schema(description = "Изображения поста")
-    @NotNull
     private Set<String> images;
 
     @Schema(description = "Лайки поста")

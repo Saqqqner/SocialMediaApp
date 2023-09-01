@@ -3,6 +3,7 @@ package ru.adel.socialmedia.services.impl;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.adel.socialmedia.dto.MessageDTO;
 import ru.adel.socialmedia.models.Message;
 import ru.adel.socialmedia.models.User;
@@ -24,27 +25,26 @@ public class MessageServiceImpl implements MessageService {
 
 
     @Override
+    @Transactional
     public MessageDTO createMessage(Long recipientId, Long senderId, String content) {
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + senderId));
         User recipient = userRepository.findById(recipientId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + recipientId));
-
         Message message = new Message();
         message.setSender(sender);
         message.setRecipient(recipient);
         message.setContent(content);
-
         Message savedMessage = messageRepository.save(message);
         return modelMapper.map(savedMessage, MessageDTO.class);
     }
 
 
     @Override
+    @Transactional
     public void deleteMessage(Long messageId, Long userId) {
         Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new MessageNotFoundException("Message not found with ID: " + messageId));
-
         if (message.getSender().getId().equals(userId)) {
             messageRepository.deleteById(messageId);
         } else {
@@ -53,13 +53,12 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MessageDTO> getMessagesBySenderAndRecipient(Long userId, Long recipientId) {
         User sender = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
         User recipient = userRepository.findById(recipientId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + recipientId));
-
-
         List<Message> messages = messageRepository.findBySenderAndRecipientOrderByCreatedAtDesc(sender, recipient);
         return messages.stream()
                 .map(message -> {

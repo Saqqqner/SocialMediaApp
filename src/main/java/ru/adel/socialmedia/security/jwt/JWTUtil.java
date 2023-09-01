@@ -8,7 +8,7 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.time.ZonedDateTime;
+import java.time.Duration;
 import java.util.Date;
 
 
@@ -17,20 +17,24 @@ public class JWTUtil {
     @Value("${jwt_secret}")
     private String secret;
 
+    @Value("${jwt_lifetime}")
+    private Duration jwtLifetime;
+
     public String generateToken(String username) {
-        Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(60).toInstant());
+        Date issuedDate = new Date();
+        Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
         return JWT.create()
-                .withSubject("User details")
+                .withSubject("User_details")
                 .withClaim("username", username)
-                .withIssuedAt(new Date())
+                .withIssuedAt(issuedDate)
                 .withIssuer("SocialMediaApp")
-                .withExpiresAt(expirationDate)
+                .withExpiresAt(expiredDate)
                 .sign(Algorithm.HMAC256(secret));
     }
 
     public String validateTokenAndRetrieveClaim(String token) throws JWTVerificationException {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
-                .withSubject("User details")
+                .withSubject("User_details")
                 .withIssuer("SocialMediaApp")
                 .build();
 

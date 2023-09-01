@@ -12,6 +12,7 @@ import ru.adel.socialmedia.dto.PostDTO;
 import ru.adel.socialmedia.security.MyUserDetails;
 import ru.adel.socialmedia.services.impl.PostServiceImpl;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ public class PostController {
     @PostMapping()
     @Operation(summary = "Создание поста")
     @ApiResponse(responseCode = "201", description = "Пост успешно создан")
-    public ResponseEntity<PostDTO> createPost(@AuthenticationPrincipal MyUserDetails myUserDetails, @RequestBody PostDTO postDTO) {
+    public ResponseEntity<PostDTO> createPost(@AuthenticationPrincipal MyUserDetails myUserDetails, @RequestBody @Valid PostDTO postDTO) {
         Long userId = myUserDetails.getUser().getId();
         PostDTO createdPost = postService.createPost(postDTO, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
@@ -37,7 +38,7 @@ public class PostController {
     @PutMapping("/{postId}")
     @Operation(summary = "Обновление поста")
     @ApiResponse(responseCode = "200", description = "Пост успешно обновлен")
-    public ResponseEntity<PostDTO> updatePost(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long postId, @RequestBody PostDTO postDTO) {
+    public ResponseEntity<PostDTO> updatePost(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long postId, @RequestBody @Valid PostDTO postDTO) {
         Long userId = myUserDetails.getUser().getId();
         PostDTO updatedPost = postService.updatePost(postId, postDTO, userId);
         return ResponseEntity.ok(updatedPost);
@@ -49,7 +50,7 @@ public class PostController {
     public ResponseEntity<Void> deletePost(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long postId) {
         Long userId = myUserDetails.getUser().getId();
         postService.deletePost(postId, userId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/{postId}")

@@ -23,7 +23,7 @@ public class Post {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String text;
 
     @CreationTimestamp
@@ -49,4 +49,18 @@ public class Post {
     private int likesCount;
 
 
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", text='" + text + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", user=" + user +
+                ", images=" + images +
+                ", likes=" + likes +
+                ", likesCount=" + likesCount +
+                '}';
+    }
 }

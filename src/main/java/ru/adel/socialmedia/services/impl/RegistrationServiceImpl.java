@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.adel.socialmedia.dto.RegistrationRequest;
 import ru.adel.socialmedia.dto.UserDTO;
 import ru.adel.socialmedia.models.User;
@@ -21,18 +22,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 
     @Override
+    @Transactional
     public UserDTO registerUser(RegistrationRequest registrationRequest) {
-
         if (userRepository.existsByEmail(registrationRequest.getEmail())) {
             throw new DuplicateUserException("Пользователь с указанным именем пользователя уже существует");
         }
-
         // Проверка существования пользователя по username
         if (userRepository.existsByUsername(registrationRequest.getUsername())) {
             throw new DuplicateUserException("Пользователь с указанным именем пользователя уже существует");
         }
-
-
         User user = modelMapper.map(registrationRequest, User.class);
         // Установка пароля
         user.setPassword(passwordEncoder.encode(user.getPassword()));
